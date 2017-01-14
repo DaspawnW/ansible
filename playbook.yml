@@ -1,0 +1,10 @@
+---
+- hosts: nginx
+  become: true
+  remote_user: administrator
+  gather_facts: no
+  pre_tasks:
+    - name: 'install python2'
+      raw: sudo apt-get -y install python-simplejson
+  roles:
+    - install_nginx

@@ -1,0 +1,34 @@
+- name: install nginx
+  apt: name=nginx state=installed update_cache=yes
+
+- file: path=/etc/nginx/sites-available/default state=absent
+- file: path=/etc/nginx/sites-enabled/default state=absent
+
+- name: copy nginx configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/nginx/sites-enabled/{{ item }}"
+  with_items:
+    - "http.conf"
+    - "https.conf"
+
+- file: path=/etc/nginx/ssl state=directory
+
+- name: install ssl certificate for nginx
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/nginx/ssl/{{ item }}"
+  with_items:
+    - key.pem
+    - cert.pem
+
+- name: Start the Nginx service
+  service:
+    name: nginx
+    state: restarted
+    enabled: true
+
+- name: copy index.html
+  copy:
+    src: "index.html"
+    dest: "/var/www/html/index.html"
